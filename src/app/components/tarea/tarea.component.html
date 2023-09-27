@@ -1,0 +1,345 @@
+<p-toast key="toast" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"
+    [showTransformOptions]="'translateX(100%)'" position="bottom-right"></p-toast>
+<!--begin::Content-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <!--begin::Post-->
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-xxl">
+           
+            <!--begin::Card-->
+            <div class="card">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-6">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <h5>TAREAS</h5>
+                    </div>
+                    <!--begin::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Toolbar-->
+                         <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                            <button type="button" (click)="ObtenerTarea()"
+                                class="btn btn-light-primary me-3"><i class="fas fa-sync-alt"></i>Actualizar</button>
+                            <button type="button" class="btn btn-primary me-3" (click)="clickAgregarTarea()"><i
+                                    class="fas fa-plus"></i>Agregar Tarea</button>
+
+                        </div> 
+                        <!--end::Toolbar-->
+                    </div>
+                    <!--end::Card toolbar-->
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <p-table #dt1 [value]="TareaData" dataKey="id"
+                        styleClass="table align-middle table-row-dashed fs-6 gy-5" [rowHover]="true" [rows]="20"
+                        [showCurrentPageReport]="true" [rowsPerPageOptions]="[20,40,60]" [loading]="loading"
+                        [paginator]="true"
+                        currentPageReportTemplate="Mostrando {first} hasta {last} de {totalRecords} elementos"
+                        [filterDelay]="0" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 2%;text-align: center;"></th>
+                                <th pSortableColumn="name" style="width: 30%;text-align: center;">Tarea
+                                    <p-sortIcon field="name"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="state" style="width: 15%;text-align: center;">Estado
+                                    <p-sortIcon field="state"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="user_id" style="width: 15%;text-align: center;">Responsable
+                                    <p-sortIcon field="user_id"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="limit_date" style="width: 10%;text-align: center;">Fecha Límite
+                                    <p-sortIcon field="limit_date"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="priority" style="width: 10%;text-align: center;">Prioridad
+                                    <p-sortIcon field="priority"></p-sortIcon>
+                                </th>
+                                <th style="width: 10%;text-align: center;">Acciones</th>
+
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>
+                                    <input pInputText type="text"
+                                        (input)="applyFilter($event, 'name', 'contains')"
+                                        placeholder="Buscar por Nombre Tarea" class="p-column-filter w-12">
+                                </th>
+                                <th>
+                                    <p-dropdown appendTo="body" [options]="EstadoData"
+                                        (onChange)="applyFilterCustom($event, 'state', 'equals')"
+                                        styleClass="p-column-filter w-12" placeholder="Selecciona"
+                                        optionValue="EstadoID" optionLabel="NombreEstado" [showClear]="true">
+                                        <ng-template let-option pTemplate="item">
+                                            <span
+                                                [class]="'customer-badge status-' + option.EstadoID">{{option.NombreEstado}}</span>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </th>
+                                <th>
+                                    <input pInputText type="text"
+                                        (input)="applyFilter($event, 'user_id', 'contains')"
+                                        placeholder="Buscar por ResponsableID" class="p-column-filter w-12">
+                                </th>
+                                <th>
+                                    <p-calendar appendTo="body" (onSelect)="onDateSelect($event)"
+                                        (onClearClick)="dt1.filter('', 'limit_date', 'equals')" [showButtonBar]="true"
+                                        styleClass="p-column-filter  w-12" placeholder="Fecha" [readonlyInput]="true"
+                                        dateFormat="dd/mm/yy"></p-calendar>
+                                </th>
+                                <th>
+                                    <p-dropdown appendTo="body" [options]="PrioridadData"
+                                        (onChange)="applyFilterCustom($event, 'priority', 'equals')"
+                                        styleClass="p-column-filter w-12" placeholder="Selecciona"
+                                        optionValue="PrioridadID" optionLabel="NombrePrioridad" [showClear]="true">
+                                        <ng-template let-option pTemplate="item">
+                                            <span
+                                                [class]="'customer-badge status-' + option.PrioridadID">{{option.NombrePrioridad}}</span>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-tarea let-expanded="expanded">
+                            <tr>
+                                <td>
+                                    <button type="button" *ngIf="tarea.subtask.length >0"  pButton pRipple
+                                        [pRowToggler]="tarea" class="p-button-text p-button-rounded p-button-plain"
+                                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                                </td>
+                                <td style="padding-left: 30px;">
+                                    <span class="p-column-title">name</span>
+                                    <span class="image-text text-center">{{tarea.name}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">state</span>
+                                    <span class="image-text">{{getState(tarea.state)}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">user_id</span>
+                                    <span class="image-text" [title]="getResponsable(tarea.user_id)">{{getResponsable(tarea.user_id)}}</span>
+                                </td>
+                                <td style="padding-left: 30px;">
+                                    <span class="p-column-title">limit_date</span>
+                                    <span class="image-text">{{getDate(tarea.limit_date)}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">priority</span>
+                                    <span class="image-text"><p-tag [severity]="getColorPrioridad(tarea.priority)">{{getPrioridad(tarea.priority)}}</p-tag></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center flex-shrink-0">
+
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1" (click)="clickSubTarea(tarea)" tooltipPosition="top" pTooltip="Agregar Sub Tarea"><i class="fas fa-add"></i></button>
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-warning me-1" (click)="clickEditarTarea(tarea)" tooltipPosition="top" pTooltip="Editar Tarea"><i class="fas fa-edit"></i></button>
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-info me-1" (click)="clickDetalle(tarea)" tooltipPosition="top" pTooltip="Ver Detalle"><i class="fas fa-eye"></i></button>
+
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="alertQuestion('eliminar',tarea,'tarea')"  tooltipPosition="top" pTooltip="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="8" class="text-center">No se encontraron elementos por mostrar</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="rowexpansion" let-tarea>
+                            <tr>
+                                <td colspan="10 ">
+                                    <div class="p-3">
+                                        <p-table [value]="tarea.subtask" dataKey="id">
+                                            <ng-template pTemplate="header">
+                                                <tr>
+                                                    <th colspan="9" style="padding-top: 0px !important; padding-bottom: 5px !important;"
+                                                        class="text-center  text-muted fw-bold" *ngIf="tarea.subtask.length >0">
+                                                        SUB TAREAS</th>
+                                                    <th colspan="9" style="padding-top: 0px !important; padding-bottom: 0px !important;"
+                                                        class="text-center  text-muted fw-bold" *ngIf="tarea.subtask.length <1">NO HAY
+                                                        SUB TAREAS</th>
+                                                </tr>
+                                                <tr *ngIf="tarea.subtask.length >0">
+                                                    <th class="text-center fs-5" style="width: 30%;text-align: center;">Sub Tarea</th>
+                                                    <th class="text-center fs-5">Estado</th>
+                                                    <th class="text-center fs-5">Responsable</th>
+                                                    <th class="text-center fs-5">Fecha Límite</th>
+                                                    <th class="text-center fs-5">Prioridad</th>
+                                                    <th></th>
+                                                </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="body" let-subtarea>
+                                                <tr>
+                                                    <td class="text-center text-muted fs-7"
+                                                        style="padding-top: 5px !important; padding-bottom: 5px !important;">
+                                                        {{subtarea.name}}</td>
+                                                    <td class="text-center text-muted fs-7"
+                                                        style="padding-top: 5px !important; padding-bottom: 5px !important;">
+                                                        {{getState(subtarea.state)}}</td>
+                                                    <td class="text-center text-muted fs-7"
+                                                        style="padding-top: 5px !important; padding-bottom: 5px !important;">
+                                                        <span class="image-text" [title]="getResponsable(tarea.user_id)">{{getResponsable(tarea.user_id)}}</span></td>
+                                                    <td class="text-center text-muted fs-7"
+                                                        style="padding-top: 5px !important; padding-bottom: 5px !important;">
+                                                        {{getDate(tarea.limit_date)}}</td>
+                                                        <td class="text-center text-muted fs-7"
+                                                        style="padding-top: 5px !important; padding-bottom: 5px !important;">
+                                                        <span class="image-text"><p-tag [severity]="getColorPrioridad(tarea.priority)">{{getPrioridad(tarea.priority)}}</p-tag></span></td>
+                                                        <td>
+                                                            <div class="d-flex justify-content-center flex-shrink-0">
+                                                                <button type="button" class="btn btn-icon btn-sm btn-light-warning me-1" (click)="clickEditarSubTarea(subtarea)" tooltipPosition="top" pTooltip="Editar SubTarea"><i class="fas fa-edit"></i></button>
+                                                                <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="alertQuestion('eliminar',tarea,'subTarea')"  tooltipPosition="top" pTooltip="Eliminar"><i class="fas fa-trash"></i></button>
+
+                                                            </div>
+
+                                                        </td>
+                                                </tr>
+                                            </ng-template>
+                                        </p-table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Post-->
+ <form ngNativeValidate [formGroup]="FormTarea">
+        <p-dialog header="Title" [(visible)]="ModalTarea" [modal]="true" styleClass="shadow"
+           [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '1000px'}" [draggable]="false"
+           contentStyleClass="py-10 px-lg-17" [maximizable]="true" [resizable]="false" [dismissableMask]="true" (onHide)="BlanqueoVariables()">
+           <ng-template pTemplate="header">
+               <h2 class="fw-bold" *ngIf="!subTarea">DATOS DE TAREA</h2>
+               <h2 class="fw-bold" *ngIf="subTarea">DATOS DE SUBTAREA</h2>
+           </ng-template>
+           <ng-template pTemplate="content">
+    
+            <div class="row g-9 mb-7" >
+                <div class="col-md-8 fv-row ">
+                    <label class="fs-6 fw-semibold mb-2">Nombre <span *ngIf="!subTarea">Tarea</span> <span *ngIf="subTarea">SubTarea</span></label>
+                    <input type="text" [readOnly]="modoDetalle" formControlName="name"  class="form-control" placeholder="ingrese Nombre Tarea" >
+                </div>
+             
+
+                <div class="col-md-2 mb-5"  *ngIf="modoDetalle">
+                    <label class="fs-6 fw-semibold mb-2"><span >Fecha Creación</span></label>
+                    <input type="text" [readOnly]="modoDetalle" formControlName="Fecha_Creacion"  class="form-control" placeholder="ingrese Nombre Tarea">
+                </div>
+                <div class="mb-5" [ngClass]="modoDetalle ? 'col-md-2 ':'col-md-4 '">
+                    <label class="fs-6 fw-semibold mb-2"><span >Fecha Límite</span></label>
+                    <p-calendar appendTo="body"  formControlName="Fecha_Limite" [readOnly]="modoDetalle" [showButtonBar]="true" styleClass="p-column-filter  w-12" placeholder="Fecha"
+                        [readonlyInput]="true" [minDate]="datefin"  dateFormat="dd/mm/yy"></p-calendar>
+                </div>
+            </div>
+            <div class="row g-9 mb-7" >
+                <div class="col-md-6 fv-row fv-plugins-icon-container">
+                    <label class="fs-6 fw-semibold mb-2">Responsable</label> <br>
+                        <p-dropdown [disabled]="modoDetalle" [required]="true" formControlName="user_id" appendTo="body" [options]="ResponsableData" placeholder="Seleccionar Responsable"
+                        optionValue="id" optionLabel="name">
+                        <ng-template let-option pTemplate="item">
+                            <span
+                                [class]="'customer-badge status-' + option.id">{{option.name}} {{option.last_name }}</span>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+                <div class="col-md-3 fv-row ">
+                    <label class="fs-6 fw-semibold mb-2">Prioridad</label> <br>
+                    <p-dropdown [required]="true" formControlName="priority"  [readOnly]="modoDetalle" appendTo="body" [options]="PrioridadData" placeholder="Seleccionar Responsable"
+                        optionValue="PrioridadID" optionLabel="NombrePrioridad">
+                    </p-dropdown>
+                </div>
+                <div class="col-md-3 fv-row fv-plugins-icon-container">
+                    <label class="fs-6 fw-semibold mb-2">Estado</label> <br>
+                        <p-dropdown [required]="true" formControlName="state"  [readOnly]="modoDetalle" appendTo="body" [options]="EstadoData" placeholder="Seleccionar Responsable"
+                        optionValue="EstadoID" optionLabel="NombreEstado">
+                    </p-dropdown>
+                </div>
+
+            </div>
+            <div class="row g-9 mb-7" *ngIf="modoDetalle">
+                <h5 class="fw-bold">Subtareas</h5>
+                <p-table #dt1 [value]="SubTareaData" dataKey="SubTareaID"
+                        styleClass="table align-middle table-row-dashed fs-6 gy-5" [rowHover]="true" [rows]="20"
+                        [showCurrentPageReport]="true" [rowsPerPageOptions]="[20,40,60]" [loading]="loading"
+                        [paginator]="true"
+                        currentPageReportTemplate="Mostrando {first} hasta {last} de {totalRecords} elementos"
+                        [filterDelay]="0" responsiveLayout="scroll">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="name" style="width: 30%;text-align: center;">SubTarea
+                                    <p-sortIcon field="name"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="Estado" style="width: 15%;text-align: center;">Estado
+                                    <p-sortIcon field="Estado"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="Responsable" style="width: 15%;text-align: center;">Responsable
+                                    <p-sortIcon field="Responsable"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="Fecha_limite" style="width: 10%;text-align: center;">Fecha Límite
+                                    <p-sortIcon field="Fecha_limite"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="Prioridad" style="width: 10%;text-align: center;">Prioridad
+                                    <p-sortIcon field="Prioridad"></p-sortIcon>
+                                </th>
+
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-tarea >
+                            <tr>
+                                <td style="padding-left: 30px;">
+                                    <span class="p-column-title">name</span>
+                                    <span class="image-text text-center">{{tarea.name}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">state</span>
+                                    <span class="image-text">{{getState(tarea.state)}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">user_id</span>
+                                    <span class="image-text" [title]="tarea.ResponsablNombre">{{getResponsable(tarea.user_id)}}</span>
+                                </td>
+                                <td style="padding-left: 30px;">
+                                    <span class="p-column-title">Fecha</span>
+                                    <span class="image-text">{{getDate(tarea.limit_date)}}</span>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="p-column-title">Prioridad</span>
+                                    <span class="image-text"><p-tag [severity]="getColorPrioridad(tarea.priority)">{{getPrioridad(tarea.priority)}}</p-tag></span>
+                                </td>
+
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="8" class="text-center">No se encontraron elementos por mostrar</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+            </div>
+           
+
+
+        </ng-template>
+           <ng-template pTemplate="footer">
+               <div class="flex-center" style="display: flex;">
+                   <button type="button" *ngIf="!editar && !modoDetalle" (click)="alertQuestion('insertar')" class="btn btn-primary m-2">Registrar</button>
+                   <button type="button" *ngIf="editar && !modoDetalle"  (click)="alertQuestion('modificar')" class="btn btn-primary m-2">Modificar</button>
+                   <button (click)="ModalTarea=false; BlanqueoVariables()" class="btn btn-danger m-2">Salir</button>
+               </div>
+           </ng-template>
+       </p-dialog>
+   </form> 
+
+ 
+</div>
+<!--end::Content-->

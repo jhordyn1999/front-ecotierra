@@ -17,6 +17,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "moment",
+              "sweetalert2"
+              
+            ],
             "outputPath": "dist/ecotierra",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -30,7 +35,14 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-spinner/animations/ball-clip-rotate-pulse.css",
+              "node_modules/primeng/resources/themes/saga-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/primeflex/primeflex.css",
+              "node_modules/primeicons/primeicons.css",
+              "src/assets/plugins/global/plugins.bundle.css",
+              "src/assets/css/style.bundle.css"
             ],
             "scripts": []
           },
@@ -100,5 +112,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
