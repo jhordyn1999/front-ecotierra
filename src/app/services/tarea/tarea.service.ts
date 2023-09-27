@@ -27,10 +27,10 @@ if (modalidad === "subTarea") {
 }
 Modificar(data:{},id:number,modalidad:string): Observable<any> {
   if (modalidad == "subTarea") {
-    return this.clienteHttp.put(this.API + "sub-tasks",data);
+    return this.clienteHttp.put(this.API + "sub-tasks/"+id,data);
   
   }else{
-    return this.clienteHttp.put(this.API + "tasks",data);
+    return this.clienteHttp.put(this.API + "tasks/"+id,data);
   
   }
 }
